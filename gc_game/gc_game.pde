@@ -40,7 +40,7 @@ void setup() {
   
   /*
   // TODO
-  file = new SoundFile(this, "menu.mp3"); //<>//
+  file = new SoundFile(this, "menu.wav"); //<>//
   file.play();
   */
   
