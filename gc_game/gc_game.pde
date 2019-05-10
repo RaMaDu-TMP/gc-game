@@ -10,7 +10,7 @@ int state;
 
 //=========SOUND VARIABLES=========
 SoundFile file;
-  
+
 //=========MENU VARIABLES==========
 boolean mouseHoverMenuStart = false;
 boolean mouseHoverMenuExit  = false;
