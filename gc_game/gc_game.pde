@@ -31,12 +31,27 @@ float menuButtonY;
 float menuButtonW;
 float menuButtonH;
 
+float x = 150;
+float y = 150;
+PImage img1;
+PImage img2;
+PImage img3;
+PImage img4;
+int sp;
+int m = 10;
+int tempo = millis();
+
 void setup() {
   
-  size(800, 600);
+  size(894, 864);//Checar resolucao
   noStroke();
   smooth();
   ellipseMode(CENTER);
+  
+  img1 = loadImage("bolomon.png");
+  img2 = loadImage("bolomon2.png");
+  img3 = loadImage("brain.png");
+  img4 = loadImage("back.png");
   
   /*
   // TODO
@@ -132,11 +147,28 @@ void menu() {
 }
 
 void game() {
-  // TODO
-  background(0);
-  textSize(100);
-  fill(255, 255, 255);
-  text("GAME", width / 2, height / 2);
+  image(img4, 894, 864);
+  background(img4);
+  
+  image(img3, 600, 600);
+  
+if(millis() - tempo > 400)
+{
+  tempo = millis();
+  if(sp == 0)
+  {
+    sp = 1;
+  }else if( sp == 1){
+    sp = 0;
+  }
+}
+
+  if(sp == 0)
+  {
+    image(img1, x, y);
+  }else{
+    image(img2, x, y);
+  }
 }
 
 void pause() {
@@ -265,6 +297,22 @@ void keyPressedMenu() {
 }
 
 void keyPressedGame() {
+  if (key == CODED) {
+    if (keyCode == UP) {
+     y = y - m;
+    // sp  = true;
+    }
+    else if (keyCode == DOWN) {
+      y = y + m;
+    //  sp = false;
+    }
+    else if (keyCode == RIGHT) {
+      x = x + m;
+    }
+    else if (keyCode == LEFT) {
+      x = x - m;
+    }
+  }
   if (keyCode == ESC) {
     key = 0;
     state = PAUSE;
