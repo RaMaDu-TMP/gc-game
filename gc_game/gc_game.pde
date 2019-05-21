@@ -39,7 +39,11 @@ PImage img3;
 PImage img4;
 int sp;
 int m = 10;
-int tempo = millis();
+
+long timeGameLoop = millis();
+
+boolean right = false;
+boolean left = false;
 
 void setup() {
   
@@ -147,6 +151,20 @@ void menu() {
 }
 
 void game() {
+  
+  if (millis() - timeGameLoop <= 60) {
+    return;
+  }
+  timeGameLoop = millis();
+  
+  if (right) {
+    x = x + m;
+  }
+  
+  if (left) {
+    x = x - m;
+  }
+  
   image(img4, 1029, 600);
   background(img4);
   
@@ -297,10 +315,10 @@ void keyPressedGame() {
     //  sp = false;
     }
     else if (keyCode == RIGHT) {
-      x = x + m;
+      right = true;
     }
     else if (keyCode == LEFT) {
-      x = x - m;
+      left = true;
     }
   }
   if (keyCode == ESC) {
@@ -322,4 +340,39 @@ void keyPressedLose() {
 
 void keyPressedWin() {
   // TODO
+}
+
+void keyReleased() {
+  switch (state) {
+    case MENU:
+      //keyReleasedMenu();
+      break;
+    
+    case GAME:
+      keyReleasedGame();
+      break;
+      
+    case PAUSE:
+      //keyReleasedPause();
+      break;
+      
+    case LOSE:
+      //keyReleasedLose();
+      break;
+      
+    case WIN:
+      //keyReleasedWin();
+      break;
+  }
+}
+
+void keyReleasedGame() {
+  if (key == CODED) {
+    if (keyCode == RIGHT) {
+      right = false;
+    }
+    else if (keyCode == LEFT) {
+      left = false;
+    }
+  }
 }
