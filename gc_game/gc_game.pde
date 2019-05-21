@@ -1,4 +1,4 @@
-import processing.sound.*; //<>//
+import processing.sound.*;
 
 private static final int MENU  = 0;
 private static final int GAME  = 1;
@@ -32,7 +32,7 @@ float menuButtonW;
 float menuButtonH;
 
 float x = 150;
-float y = 150;
+float y = 400;
 PImage img1;
 PImage img2;
 PImage img3;
@@ -43,19 +43,19 @@ int tempo = millis();
 
 void setup() {
   
-  size(894, 864);//Checar resolucao
+  size(1029, 600);//Checar resolucao
   noStroke();
   smooth();
   ellipseMode(CENTER);
   
-  img1 = loadImage("bolomon.png");
-  img2 = loadImage("bolomon2.png");
+  img1 = loadImage("bolomon2.png");
+  img2 = loadImage("bolomon.png");
   img3 = loadImage("brain.png");
-  img4 = loadImage("back.png");
+  img4 = loadImage("country-platform-preview.png");
   
   /*
   // TODO
-  file = new SoundFile(this, "menu.wav"); //<>//
+  file = new SoundFile(this, "menu.wav");
   file.play();
   */
   
@@ -147,27 +147,17 @@ void menu() {
 }
 
 void game() {
-  image(img4, 894, 864);
+  image(img4, 1029, 600);
   background(img4);
   
-  image(img3, 600, 600);
+  image(img3, 900, 425);
+  float mx = constrain(x , 0, 970);
+  float my = constrain(y, 400, 400);
   
-if(millis() - tempo > 400)
-{
-  tempo = millis();
-  if(sp == 0)
-  {
-    sp = 1;
-  }else if( sp == 1){
-    sp = 0;
-  }
-}
-
-  if(sp == 0)
-  {
-    image(img1, x, y);
+  if(keyCode == TAB){
+    image(img2, mx, my);
   }else{
-    image(img2, x, y);
+    image(img1, mx, my);
   }
 }
 
