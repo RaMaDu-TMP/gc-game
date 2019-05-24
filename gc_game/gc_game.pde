@@ -45,12 +45,15 @@ long timeGameLoop = millis();
 boolean right = false;
 boolean left = false;
 
+int numBalls = 20;
+Ball[] balls = new Ball[numBalls];
+
 void setup() {
   
   size(1029, 600);//Checar resolucao
   noStroke();
   smooth();
-  ellipseMode(CENTER);
+  ellipseMode(RADIUS);
   
   img1 = loadImage("bolomon2.png");
   img2 = loadImage("bolomon.png");
@@ -82,6 +85,11 @@ void setup() {
   menuButtonY = (height / 2) + 227;
   
   state = MENU;
+  
+  //Balls
+   for (int i = 0; i < numBalls; i++) {
+    balls[i] = new Ball(random(width), random(height), random(5, 20), 0, random(5, 15), i, color(random(0, 256), random(0, 256), random(0, 256)));
+  }
 }
 
 void draw() {
@@ -176,6 +184,11 @@ void game() {
     image(img2, mx, my);
   }else{
     image(img1, mx, my);
+  }
+  
+  for (Ball ball : balls){
+    ball.move();
+    ball.display();
   }
 }
 
@@ -374,5 +387,49 @@ void keyReleasedGame() {
     else if (keyCode == LEFT) {
       left = false;
     }
+  }
+}
+
+class Ball {
+  
+  float xpos, ypos;
+  float xspeed, yspeed;
+  int id;
+  float radius;
+  color c;
+  
+  Ball(float xin, float yin, float xdirection, float ydirection, float irad, int idin, color ballcolor) {
+    xpos = xin;
+    ypos = yin;
+    xspeed = xdirection;
+    yspeed = ydirection;
+    radius = irad;
+    id = idin;
+    c = ballcolor;
+
+  } 
+ 
+  void move() {
+    xpos += xspeed;
+    ypos += yspeed;
+    
+    if (xpos > width-radius){
+      xspeed = -1 * abs(xspeed);
+    }
+    else if (xpos <= 5){
+      xspeed = abs(xspeed);
+    }
+    
+    if (ypos > height-radius){
+      yspeed = -1 *abs(yspeed);
+    }
+    else if (ypos <= 5){
+      yspeed = abs(yspeed);
+    }
+  }
+  
+  void display() {
+    fill(c);
+    ellipse(xpos, ypos, radius, radius);
   }
 }
