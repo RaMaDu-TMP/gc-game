@@ -178,6 +178,7 @@ void menu() {
 
 void game() {
 
+  textSize(40);
   menuPlayer.close();
   gamePlayer.play();
   
@@ -243,7 +244,7 @@ void game() {
     if(millis() > time)
       life = 5;
   }
-  text("Pontos:" + str(life), 80, 20);
+  text("VIDA:" + str(life), 70, 20);
 }
 
 void pause() {
