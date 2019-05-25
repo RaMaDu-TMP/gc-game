@@ -1,5 +1,4 @@
-import processing.sound.*;
-
+import ddf.minim.*;
 private static final int MENU  = 0;
 private static final int GAME  = 1;
 private static final int PAUSE = 2;
@@ -9,7 +8,11 @@ private static final int WIN   = 4;
 int state;
 
 //=========SOUND VARIABLES=========
-SoundFile file;
+Minim menuMusic;
+AudioPlayer menuPlayer;
+
+Minim gameMusic;
+AudioPlayer gamePlayer;
 
 //=========MENU VARIABLES==========
 boolean mouseHoverMenuStart = false;
@@ -37,34 +40,49 @@ PImage img1;
 PImage img2;
 PImage img3;
 PImage img4;
+PImage img5;
 int sp;
 int m = 10;
+
+float xBrain = 580;
+float yBrain = 580;
 
 long timeGameLoop = millis();
 
 boolean right = false;
 boolean left = false;
+boolean up = false;
+boolean down = false;
 
-int numBalls = 20;
+int numBalls = 50;
 Ball[] balls = new Ball[numBalls];
+
+int life = 5;
 
 void setup() {
   
-  size(1029, 600);//Checar resolucao
+  size(1280, 720);//Checar resolucao
   noStroke();
   smooth();
   ellipseMode(RADIUS);
   
-  img1 = loadImage("bolomon2.png");
-  img2 = loadImage("bolomon.png");
+  img1 = loadImage("Bolomon2.png");
+  img2 = loadImage("Bolsonaro_Loses.jpg");
   img3 = loadImage("brain.png");
-  img4 = loadImage("country-platform-preview.png");
+  img4 = loadImage("Space_Image.png");
+  img5 = loadImage("Bolsonaro_Wins.jpg");
   
-  /*
+  
+  x = 590;
+  y = 50;
+  
   // TODO
-  file = new SoundFile(this, "menu.wav");
-  file.play();
-  */
+  menuMusic = new Minim(this);
+  menuPlayer = menuMusic.loadFile("menu.mp3");
+  menuPlayer.play();
+  
+  gameMusic = new Minim(this);
+  gamePlayer = gameMusic.loadFile("game.mp3");
   
   // Start button dimension and position
   startButtonW = width / 2;
@@ -88,7 +106,7 @@ void setup() {
   
   //Balls
    for (int i = 0; i < numBalls; i++) {
-    balls[i] = new Ball(random(width), random(height), random(5, 20), 0, random(5, 15), i, color(random(0, 256), random(0, 256), random(0, 256)));
+    balls[i] = new Ball(random(width), random(200, 500), random(20, 30), 0, random(5, 15), i, color(random(0, 256), random(0, 256), random(0, 256)));
   }
 }
 
@@ -159,12 +177,16 @@ void menu() {
 }
 
 void game() {
+
+  menuPlayer.close();
+  gamePlayer.play();
   
   if (millis() - timeGameLoop <= 60) {
     return;
   }
   timeGameLoop = millis();
   
+  //Main sprite movement
   if (right) {
     x = x + m;
   }
@@ -173,23 +195,53 @@ void game() {
     x = x - m;
   }
   
-  image(img4, 1029, 600);
+  if (up) {
+    y = y - m;
+  }
+  
+  if (down) {
+    y = y + m;
+  }
+  
   background(img4);
   
-  image(img3, 900, 425);
-  float mx = constrain(x , 0, 970);
-  float my = constrain(y, 400, 400);
+  image(img3, xBrain, yBrain);
   
-  if(keyCode == TAB){
-    image(img2, mx, my);
-  }else{
-    image(img1, mx, my);
-  }
+  x = constrain(x, 0, 1220);
+  y = constrain(y, 0, 600);
+  
+  image(img1, x, y);
   
   for (Ball ball : balls){
     ball.move();
     ball.display();
   }
+  
+  float caracterX = x;
+  float caracterY = y;
+  
+  for (int i = 0; i < numBalls; i++){
+    Ball b1 = balls[i];
+    if (b1.xpos > caracterX && b1.xpos < (caracterX + 52)){
+      if (b1.ypos > caracterY && b1.ypos < (caracterY + 114)){
+        x = 590;
+        y = 50;
+        life -= 1;
+      }
+    }
+  }
+  
+  if ((xBrain + 80) > caracterX && xBrain < (caracterX + 52)){
+    if((yBrain + 72) > caracterY && yBrain < (caracterY + 114)){
+      background(img5);
+      text("PARABENS \n VOCE VENCEU", width/2,height/1.5);
+    }
+  } 
+  if (life == 0){
+    background(img2);
+    text("MORREU", width/2, height/2);
+  }
+  text("Pontos:" + str(life), 80, 20);
 }
 
 void pause() {
@@ -320,11 +372,11 @@ void keyPressedMenu() {
 void keyPressedGame() {
   if (key == CODED) {
     if (keyCode == UP) {
-     y = y - m;
+     up = true;
     // sp  = true;
     }
     else if (keyCode == DOWN) {
-      y = y + m;
+      down = true;
     //  sp = false;
     }
     else if (keyCode == RIGHT) {
@@ -386,6 +438,12 @@ void keyReleasedGame() {
     }
     else if (keyCode == LEFT) {
       left = false;
+    }
+    if (keyCode == UP) {
+      up = false;
+    }
+    else if (keyCode == DOWN) {
+      down = false;
     }
   }
 }
