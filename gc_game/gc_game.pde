@@ -41,8 +41,8 @@ PImage img2;
 PImage img3;
 PImage img4;
 PImage img5;
-int sp;
 int m = 10;
+int time = 15000;
 
 float xBrain = 580;
 float yBrain = 580;
@@ -66,7 +66,7 @@ void setup() {
   smooth();
   ellipseMode(RADIUS);
   
-  img1 = loadImage("Bolomon2.png");
+  img1 = loadImage("bolomon2.png");
   img2 = loadImage("Bolsonaro_Loses.jpg");
   img3 = loadImage("brain.png");
   img4 = loadImage("Space_Image.png");
@@ -240,6 +240,8 @@ void game() {
   if (life == 0){
     background(img2);
     text("MORREU", width/2, height/2);
+    if(millis() > time)
+      life = 5;
   }
   text("Pontos:" + str(life), 80, 20);
 }
