@@ -54,7 +54,7 @@ boolean left = false;
 boolean up = false;
 boolean down = false;
 
-int numBalls = 50;
+int numBalls = 15;
 Ball[] balls = new Ball[numBalls];
 
 int life = 5;
