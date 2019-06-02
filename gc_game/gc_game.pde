@@ -18,6 +18,10 @@ AudioPlayer gamePlayer;
 boolean mouseHoverMenuStart = false;
 boolean mouseHoverMenuExit  = false;
 boolean mouseHoverPauseMenu = false;
+boolean mouseHoverLoseMenu  = false;
+boolean mouseHoverWinMenu   = false; 
+boolean mouseHoverLoseExit  = false;
+boolean mouseHoverWinExit   = false;
 
 float startButtonX;
 float startButtonY;
@@ -34,18 +38,29 @@ float menuButtonY;
 float menuButtonW;
 float menuButtonH;
 
-float x = 150;
-float y = 400;
+float  playAgainButtonW;
+float  playAgainButtonH;
+float  playAgainButtonX;
+float  playAgainButtonY;
+  
+float  exitFinishButtonW;
+float  exitFinishButtonH;
+float  exitFinishButtonX;
+float  exitFinishButtonY;
+
+float x = 0;
+float y = 0;
 PImage img1;
 PImage img2;
 PImage img3;
 PImage img4;
 PImage img5;
 int m = 10;
-int time = 15000;
 
 float xBrain = 580;
 float yBrain = 580;
+float xBrainSpeed = random(5, 15);
+float yBrainSpeed = 0;
 
 long timeGameLoop = millis();
 
@@ -68,21 +83,18 @@ void setup() {
   
   img1 = loadImage("bolomon2.png");
   img2 = loadImage("Bolsonaro_Loses.jpg");
-  img3 = loadImage("brain.png");
+  img3 = loadImage("Bolso_Brain.png");
   img4 = loadImage("Space_Image.png");
   img5 = loadImage("Bolsonaro_Wins.jpg");
-  
   
   x = 590;
   y = 50;
   
   // TODO
-  menuMusic = new Minim(this);
-  menuPlayer = menuMusic.loadFile("menu.mp3");
-  menuPlayer.play();
-  
   gameMusic = new Minim(this);
   gamePlayer = gameMusic.loadFile("game.mp3");
+  gamePlayer.play();
+  gamePlayer.loop();
   
   // Start button dimension and position
   startButtonW = width / 2;
@@ -102,11 +114,21 @@ void setup() {
   menuButtonX = (width / 2) - (menuButtonW / 2);
   menuButtonY = (height / 2) + 227;
   
+  playAgainButtonW = width / 8;
+  playAgainButtonH = 40;
+  playAgainButtonX = (width / 2) - (menuButtonW / 2);
+  playAgainButtonY = (height / 2) + 227;
+  
+  exitFinishButtonW = width / 8;
+  exitFinishButtonH = 40;
+  exitFinishButtonX = (width / 2) - (menuButtonW / 2);
+  exitFinishButtonY = (height / 2) + 270;
+  
   state = MENU;
   
   //Balls
    for (int i = 0; i < numBalls; i++) {
-    balls[i] = new Ball(random(width), random(200, 500), random(20, 30), 0, random(5, 15), i, color(random(0, 256), random(0, 256), random(0, 256)));
+    balls[i] = new Ball(random(width), random(200, 500), random(15, 35), 0, random(5, 15), i, color(random(0, 256), random(0, 256), random(0, 256)));
   }
 }
 
@@ -137,6 +159,7 @@ void draw() {
 }
 
 void menu() {
+  
   // General menu background
   background(155);
   
@@ -179,14 +202,12 @@ void menu() {
 void game() {
 
   textSize(40);
-  menuPlayer.close();
-  gamePlayer.play();
   
   if (millis() - timeGameLoop <= 60) {
     return;
   }
   timeGameLoop = millis();
-  
+ 
   //Main sprite movement
   if (right) {
     x = x + m;
@@ -199,7 +220,6 @@ void game() {
   if (up) {
     y = y - m;
   }
-  
   if (down) {
     y = y + m;
   }
@@ -207,6 +227,7 @@ void game() {
   background(img4);
   
   image(img3, xBrain, yBrain);
+  moveBrain();
   
   x = constrain(x, 0, 1220);
   y = constrain(y, 0, 600);
@@ -228,23 +249,31 @@ void game() {
         x = 590;
         y = 50;
         life -= 1;
+        if (life == 0){
+          lose();
+        }
       }
     }
   }
   
   if ((xBrain + 80) > caracterX && xBrain < (caracterX + 52)){
     if((yBrain + 72) > caracterY && yBrain < (caracterY + 114)){
-      background(img5);
-      text("PARABENS \n VOCE VENCEU", width/2,height/1.5);
+      win();
     }
-  } 
-  if (life == 0){
-    background(img2);
-    text("MORREU", width/2, height/2);
-    if(millis() > time)
-      life = 5;
   }
-  text("VIDA:" + str(life), 70, 20);
+  fill(255, 255, 255);
+  text("VIDAS:" + str(life), 80, 20);
+}
+
+void moveBrain(){
+    xBrain += xBrainSpeed;
+    
+    if ((xBrain + 80) > width){
+      xBrainSpeed = -1 * abs(xBrainSpeed);
+    }
+    else if (xBrain <= 5){
+      xBrainSpeed = abs(xBrainSpeed);
+    }
 }
 
 void pause() {
@@ -271,20 +300,96 @@ void pause() {
   fill(255, 255, 255); // Button text color
   textSize(20); // Button text size
   text("MENU", width / 2, (height / 2) + 145 + 100); // Button text and position
+  
+  life = 5;
+  x = 590;
+  y = 50;
 }
 
 void lose() {
-  // TODO
+  background(img2);
+  textAlign(CENTER, CENTER);
+  
+  fill(255, 0, 0);
+  textSize(100);
+  text("NAO CONXEGUE NE", width/2, height/2);
+  
+  if(mouseHoverLoseMenu){
+      fill(3, 64, 102);
+  }else{
+      fill(9, 133, 179);
+  }
+  
+  rect(playAgainButtonX, playAgainButtonY, playAgainButtonW, playAgainButtonH);
+  
+  fill(255, 255, 255);
+  textSize(20);
+  text("PLAY AGAIN", width / 2, (height / 2) + 145 + 100); 
+  
+  if (mouseHoverLoseExit) { // Button background
+     fill(179, 0, 0); 
+  } else {
+     fill(255, 0, 0);
+  }
+  
+  rect(exitFinishButtonX, exitFinishButtonY, exitFinishButtonW, exitFinishButtonH); // Draw button
+  
+  fill(255, 255, 255); // Button text color
+  textSize(20); // Button text size
+  text("EXIT", width / 2, (height / 2) + 288); // Button text and position
+  
+  life = 5;
+  state = LOSE;
+  x = 590;
+  y = 50;
 }
 
 void win() {
-  // TODO
+  background(img5);
+  textAlign(CENTER, CENTER);
+  
+  fill(255, 0, 0);
+  textSize(100);
+  text("PARABENS", width/2, height/2);
+  
+  if(mouseHoverWinMenu){
+      fill(3, 64, 102);
+  }else{
+      fill(9, 133, 179);
+  }
+  
+  rect(playAgainButtonX, playAgainButtonY, playAgainButtonW, playAgainButtonH);
+  
+  fill(255, 255, 255);
+  textSize(20);
+  text("PLAY AGAIN", width / 2, (height / 2) + 145 + 100); 
+  
+  if (mouseHoverWinExit) { // Button background
+     fill(179, 0, 0); 
+  } else {
+     fill(255, 0, 0);
+  }
+  
+  rect(exitFinishButtonX, exitFinishButtonY, exitFinishButtonW, exitFinishButtonH); // Draw button
+  
+  fill(255, 255, 255); // Button text color
+  textSize(20); // Button text size
+  text("EXIT", width / 2, (height / 2) + 288); // Button text and position
+  
+  life = 5;
+  state = WIN;
+  x = 590;
+  y = 50;
 }
 
 void updateMouseVariables() {
   mouseHoverMenuStart = (state == MENU)  && isMouseOverRect(startButtonX, startButtonY, startButtonW, startButtonH);
   mouseHoverMenuExit  = (state == MENU)  && isMouseOverRect(exitButtonX, exitButtonY, exitButtonW, exitButtonH);
   mouseHoverPauseMenu = (state == PAUSE) && isMouseOverRect(menuButtonX, menuButtonY, menuButtonW, menuButtonH);
+  mouseHoverLoseMenu  = (state == LOSE) && isMouseOverRect(playAgainButtonX, playAgainButtonY, playAgainButtonW, playAgainButtonH);
+  mouseHoverWinMenu   = (state == WIN) && isMouseOverRect(playAgainButtonX, playAgainButtonY, playAgainButtonW, playAgainButtonH);
+  mouseHoverLoseExit  = (state == LOSE) && isMouseOverRect(exitFinishButtonX, exitFinishButtonY, exitFinishButtonW, exitFinishButtonH);
+  mouseHoverWinExit  = (state == WIN) && isMouseOverRect(exitFinishButtonX, exitFinishButtonY, exitFinishButtonW, exitFinishButtonH);
 }
 
 boolean isMouseOverRect(float x, float y, float width, float height)  {
@@ -337,11 +442,21 @@ void mousePressedPause() {
 }
 
 void mousePressedLose() {
-  // TODO
+  if (mouseHoverLoseMenu) {
+    state = GAME;
+  }
+  if (mouseHoverLoseExit){
+    exit();
+  }
 }
 
 void mousePressedWin() {
-  // TODO
+  if (mouseHoverWinMenu){
+    state = GAME;
+  }
+  if (mouseHoverWinExit){
+    exit();
+  }
 }
 
 void keyPressed() {
@@ -421,20 +536,71 @@ void keyReleased() {
       break;
       
     case PAUSE:
-      //keyReleasedPause();
+      keyReleasedPause();
       break;
       
     case LOSE:
-      //keyReleasedLose();
+      keyReleasedLose();
       break;
       
     case WIN:
-      //keyReleasedWin();
+      keyReleasedWin();
       break;
   }
 }
 
 void keyReleasedGame() {
+  if (key == CODED) {
+    if (keyCode == RIGHT) {
+      right = false;
+    }
+    else if (keyCode == LEFT) {
+      left = false;
+    }
+    if (keyCode == UP) {
+      up = false;
+    }
+    else if (keyCode == DOWN) {
+      down = false;
+    }
+  }
+}
+
+void keyReleasedLose() {
+  if (key == CODED) {
+    if (keyCode == RIGHT) {
+      right = false;
+    }
+    else if (keyCode == LEFT) {
+      left = false;
+    }
+    if (keyCode == UP) {
+      up = false;
+    }
+    else if (keyCode == DOWN) {
+      down = false;
+    }
+  }
+}
+
+void keyReleasedWin() {
+  if (key == CODED) {
+    if (keyCode == RIGHT) {
+      right = false;
+    }
+    else if (keyCode == LEFT) {
+      left = false;
+    }
+    if (keyCode == UP) {
+      up = false;
+    }
+    else if (keyCode == DOWN) {
+      down = false;
+    }
+  }
+}
+
+void keyReleasedPause() {
   if (key == CODED) {
     if (keyCode == RIGHT) {
       right = false;
